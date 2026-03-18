@@ -6,3 +6,4 @@ venv/
 .env
 node_modules/
 dist/
+opencx-lead-engine/backend/exports/

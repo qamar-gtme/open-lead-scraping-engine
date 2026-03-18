@@ -58,4 +58,18 @@ Anchor URLs: 3–5 known companies matching the description.
         ],
     )
     content = response.content[0].text if response.content else "{}"
-    return json.loads(content)
+    return _parse_json_content(content)
+
+
+def _parse_json_content(content: str) -> dict:
+    text = content.strip()
+    if not text:
+        raise ValueError("Empty Claude response")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start >= 0 and end > start:
+            return json.loads(text[start : end + 1])
+        raise
