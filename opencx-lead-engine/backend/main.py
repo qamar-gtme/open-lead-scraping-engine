@@ -32,6 +32,7 @@ from engine import run_pipeline
 from enrichers.base import metadata as enricher_metadata
 from lists.base import metadata as list_metadata
 from models.base import metadata as model_metadata
+from outputs.base import load_plugins as load_output_plugins
 from outputs.base import metadata as output_metadata
 from suggester import suggest
 
@@ -226,6 +227,33 @@ async def costs_job(job_id: str) -> dict[str, Any]:
 @app.get("/history")
 async def history(limit: int = Query(default=50, ge=1, le=200)) -> list[dict[str, Any]]:
     return await get_history(limit=limit)
+
+
+@app.post("/resend-webhook/{job_id}")
+async def resend_webhook(job_id: str, webhook_url: str | None = None) -> dict[str, Any]:
+    job = await get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    rows = await get_results(job_id)
+    if not rows:
+        raise HTTPException(status_code=400, detail="No results for this job")
+
+    config = dict(job.get("config_json", {}))
+    if webhook_url:
+        config["webhook_url"] = webhook_url
+
+    plugins = load_output_plugins()
+    keys = [k for k in ["webhook_clay", "webhook_hubspot", "webhook_generic"] if k in plugins]
+    tasks = [plugins[key].run(job_id, rows, config) for key in keys]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    out = []
+    for item in results:
+        if isinstance(item, Exception):
+            out.append({"error": str(item)})
+        else:
+            out.append(item)
+    return {"job_id": job_id, "outputs": out}
 
 
 def _split_csv(value: str) -> list[str]:
