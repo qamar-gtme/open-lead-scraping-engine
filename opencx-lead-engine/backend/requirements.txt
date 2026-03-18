@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+exa-py
+openai
+anthropic
+aiohttp
+aiofiles
+python-dotenv
+pydantic
+aiosqlite
