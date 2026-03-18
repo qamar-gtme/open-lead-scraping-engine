@@ -5,6 +5,7 @@ import os
 import pkgutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
@@ -103,7 +104,8 @@ def get_exa_client() -> Exa:
 def load_plugins() -> dict[str, EnricherPlugin]:
     plugins: dict[str, EnricherPlugin] = {}
     package = __package__ or "enrichers"
-    for module_info in pkgutil.iter_modules(__path__):  # type: ignore[name-defined]
+    module_dir = Path(__file__).resolve().parent
+    for module_info in pkgutil.iter_modules([str(module_dir)]):
         if module_info.name == "base":
             continue
         module = importlib.import_module(f"{package}.{module_info.name}")

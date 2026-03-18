@@ -4,6 +4,7 @@ import importlib
 import pkgutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 DEFAULT_QUALIFIER_SYSTEM_PROMPT = """
@@ -82,7 +83,8 @@ class ListTypePlugin(ABC):
 def load_plugins() -> dict[str, ListTypePlugin]:
     plugins: dict[str, ListTypePlugin] = {}
     package = __package__ or "lists"
-    for module_info in pkgutil.iter_modules(__path__):  # type: ignore[name-defined]
+    module_dir = Path(__file__).resolve().parent
+    for module_info in pkgutil.iter_modules([str(module_dir)]):
         if module_info.name == "base":
             continue
         module = importlib.import_module(f"{package}.{module_info.name}")

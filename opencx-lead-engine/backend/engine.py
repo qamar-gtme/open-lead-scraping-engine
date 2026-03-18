@@ -125,12 +125,13 @@ async def _cost_totals_for_job(job_id: str) -> dict[str, float]:
 
 async def run_pipeline(job_id: str, config: dict[str, Any]) -> None:
     tracker = CostTracker(job_id)
-    enricher_plugins = load_enricher_plugins()
-    model_plugins = load_model_plugins()
-    list_plugins = load_list_plugins()
-    output_plugins = load_output_plugins()
 
     try:
+        enricher_plugins = load_enricher_plugins()
+        model_plugins = load_model_plugins()
+        list_plugins = load_list_plugins()
+        output_plugins = load_output_plugins()
+
         await _check_cancel(job_id)
         await update_job_status(job_id, "phase_1_planning")
         await append_log(job_id, "Phase 1: planning started", "gray", "phase_1")
