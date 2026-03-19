@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 import aiosqlite
 
-DB_PATH = Path(__file__).resolve().parent / "jobs.db"
+from settings import DB_PATH
 
 EXA_PRICING = {
     "search_and_contents": 0.010,

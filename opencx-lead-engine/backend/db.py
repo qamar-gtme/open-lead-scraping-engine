@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 import aiosqlite
 
-DB_PATH = Path(__file__).resolve().parent / "jobs.db"
+from settings import DB_PATH
 
 
 async def create_tables() -> None:

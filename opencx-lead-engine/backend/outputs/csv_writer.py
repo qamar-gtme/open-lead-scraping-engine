@@ -6,8 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from outputs.base import OutputMeta, OutputPlugin
-
-EXPORT_DIR = Path(__file__).resolve().parent.parent / "exports"
+from settings import EXPORT_DIR
 
 
 class CSVWriterOutput(OutputPlugin):

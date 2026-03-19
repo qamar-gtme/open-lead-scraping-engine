@@ -34,6 +34,7 @@ from lists.base import metadata as list_metadata
 from models.base import metadata as model_metadata
 from outputs.base import load_plugins as load_output_plugins
 from outputs.base import metadata as output_metadata
+from settings import EXPORT_DIR, cors_origins
 from suggester import suggest
 
 load_dotenv(Path(__file__).resolve().parent / ".env")
@@ -67,7 +68,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="open.cx lead engine", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -124,7 +125,7 @@ async def results(job_id: str) -> dict[str, Any]:
 
 @app.get("/download/{job_id}")
 async def download(job_id: str) -> FileResponse:
-    path = Path(__file__).resolve().parent / "exports" / f"{job_id}.csv"
+    path = EXPORT_DIR / f"{job_id}.csv"
     if not path.exists():
         raise HTTPException(status_code=404, detail="CSV not found")
     return FileResponse(path, media_type="text/csv", filename=f"{job_id}.csv")

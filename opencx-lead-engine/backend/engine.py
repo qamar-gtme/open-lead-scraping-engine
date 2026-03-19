@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 import aiosqlite
@@ -21,8 +20,7 @@ from enrichers.base import get_exa_client, load_plugins as load_enricher_plugins
 from lists.base import load_plugins as load_list_plugins
 from models.base import load_plugins as load_model_plugins
 from outputs.base import load_plugins as load_output_plugins
-
-EXA_CACHE_PATH = Path(__file__).resolve().parent / "exa_raw_cache.json"
+from settings import EXA_CACHE_PATH
 
 
 class JobCancelled(Exception):
